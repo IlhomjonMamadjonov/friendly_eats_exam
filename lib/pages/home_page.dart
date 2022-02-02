@@ -75,7 +75,7 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
 
   @override
   Widget build(BuildContext context) {
-    final bool usingMobileLayout = MediaQuery.of(context).size.shortestSide < 600;
+    bool usingDesktop = MediaQuery.of(context).size.width > 1024;
     return Scaffold(
       ///Appbar
       appBar: AppBar(
@@ -126,12 +126,17 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
       ///body LitView
       body: Container(
         padding: EdgeInsets.only(left: 10, right: 10, top: 5),
-        child: ListView.builder(
+        child: GridView.builder(
           shrinkWrap: true,
           itemCount: images.length,
           itemBuilder: (context, index) {
             return _itemBuilder(context, index);
-          },
+          }, gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: usingDesktop ? 3 : 1,
+          childAspectRatio: usingDesktop ? 2/1.3: 2/1.5,
+          crossAxisSpacing: 1,
+          mainAxisSpacing: 2,
+        ),
         ),
       ),
     );
@@ -141,19 +146,20 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
   Container _itemBuilder(BuildContext context, int index) {
     return Container(
       padding: EdgeInsets.only(bottom: 10, top: 10),
-
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.30,
-              margin: EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(images[index]), fit: BoxFit.cover),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.30,
+                margin: EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage(images[index]), fit: BoxFit.cover),
+                ),
               ),
             ),
             Container(
@@ -169,6 +175,7 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
                         style:
                             TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       ),
+                      SizedBox(height: 4,),
                       Text(
                         "\$\$\$",
                         style: TextStyle(color: Colors.grey),
@@ -176,7 +183,9 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
                     ],
                   ),
                   rating(),
-                  Text("${namesmeal[index]} • ${places[index]}")
+                  SizedBox(height: 4,),
+                  Text("${namesmeal[index]} • ${places[index]}"),
+                  SizedBox(height: 4,)
                 ],
               ),
             )
