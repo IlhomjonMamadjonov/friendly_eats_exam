@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FriendlyEatsApp extends StatefulWidget {
   static const String id = "/main_page";
@@ -8,21 +9,28 @@ class FriendlyEatsApp extends StatefulWidget {
 }
 
 class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
   List<String> images = [
     "assets/images/r1.jpg",
     "assets/images/r2.jpg",
     "assets/images/r3.jpg",
     "assets/images/r4.jpg",
-    " assets/images/r5.jpg",
-    " assets/images/r6.jpg",
+    "assets/images/r5.jpg",
+    "assets/images/r6.jpg",
     "assets/images/r7.jpg",
-    " assets/images/r8.jpg",
-    " assets/images/r9.jpg",
-    " assets/images/r10.jpg",
-    " assets/images/r11.jpg",
+    "assets/images/r8.jpg",
+    "assets/images/r9.jpg",
+    "assets/images/r10.jpg",
+    "assets/images/r11.jpg",
     "assets/images/r12.jpg",
-    " assets/images/r13.jpg",
-    " assets/images/r14.jpg"
+    "assets/images/r13.jpg",
+    "assets/images/r14.jpg"
   ];
   List<String> namesfood = [
     "Dinner SteakHouse",
@@ -75,6 +83,10 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
     bool usingDesktop = MediaQuery.of(context).size.width > 1024;
     return Scaffold(
       ///Appbar
