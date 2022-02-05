@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:friendly_eats/models/food_models.dart';
+import 'package:friendly_eats/models/post%20models.dart';
 
 class FriendlyEatsApp extends StatefulWidget {
   static const String id = "/main_page";
@@ -9,85 +10,24 @@ class FriendlyEatsApp extends StatefulWidget {
 }
 
 class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
+  List<Food> allFoods = Foods().foods;
+  List<Food> foods = [];
+  int perPage = 9;
+  int present = 0;
 
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    setState(() {
+      foods.addAll(allFoods.getRange(present, present + perPage));
+      present += perPage;
+    });
   }
-
-  List<String> images = [
-    "assets/images/r1.jpg",
-    "assets/images/r2.jpg",
-    "assets/images/r3.jpg",
-    "assets/images/r4.jpg",
-    "assets/images/r5.jpg",
-    "assets/images/r6.jpg",
-    "assets/images/r7.jpg",
-    "assets/images/r8.jpg",
-    "assets/images/r9.jpg",
-    "assets/images/r10.jpg",
-    "assets/images/r11.jpg",
-    "assets/images/r12.jpg",
-    "assets/images/r13.jpg",
-    "assets/images/r14.jpg"
-  ];
-  List<String> namesfood = [
-    "Dinner SteakHouse",
-    "Fire Hyper",
-    "Deli Hyper",
-    "Dinner SteakHouse",
-    "Fire Hyper",
-    "Deli Hyper",
-    "Dinner SteakHouse",
-    "Fire Hyper",
-    "Deli Hyper",
-    "Dinner SteakHouse",
-    "Fire Hyper",
-    "Deli Hyper",
-    "Dinner SteakHouse",
-    "Fire Hyper",
-  ];
-  List<String> namesmeal = [
-    "Sushi",
-    "Brunch",
-    "Deli",
-    "Sushi",
-    "Brunch",
-    "Deli",
-    "Sushi",
-    "Brunch",
-    "Deli",
-    "Sushi",
-    "Brunch",
-    "Deli",
-    "Sushi",
-    "Brunch",
-  ];
-  List<String> places = [
-    "Seattle",
-    "Colorado Springs",
-    "Los Angeles",
-    "Omaha",
-    "Seattle",
-    "Colorado Springs",
-    "Los Angeles",
-    "Omaha",
-    "Seattle",
-    "Colorado Springs",
-    "Los Angeles",
-    "Omaha",
-    "Seattle",
-    "Colorado Springs",
-  ];
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
     bool usingDesktop = MediaQuery.of(context).size.width > 1024;
+
     return Scaffold(
       ///Appbar
       appBar: AppBar(
@@ -135,69 +75,84 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
         ),
       ),
 
-      ///body LitView
-      body: Container(
+      ///body GridView
+      body: GridView.builder(
         padding: EdgeInsets.only(left: 10, right: 10, top: 5),
-        child: GridView.builder(
-          shrinkWrap: true,
-          itemCount: images.length,
-          itemBuilder: (context, index) {
-            return _itemBuilder(context, index);
-          }, gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        physics: BouncingScrollPhysics(),
+        shrinkWrap: true,
+        itemCount:
+            (present <= allFoods.length) ? foods.length + 1 : allFoods.length,
+        itemBuilder: (context, index) {
+          return index == foods.length
+              ? buttonLoadMore()
+              : _meals(food: Foods().foods[index]);
+        },
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: usingDesktop ? 3 : 1,
-          childAspectRatio: usingDesktop ? 2/1.3: 2/1.5,
+          childAspectRatio: usingDesktop ? 2 / 1.3 : 2 / 1.5,
           crossAxisSpacing: 1,
           mainAxisSpacing: 2,
-        ),
         ),
       ),
     );
   }
 
-  ///list Builder
-  Container _itemBuilder(BuildContext context, int index) {
+  /// List Builder
+  Container _meals({Food? food}) {
     return Container(
-      padding: EdgeInsets.only(bottom: 10, top: 10),
+      padding: EdgeInsets.only(bottom: 10, top: 5),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /// Image
             Expanded(
               child: Container(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.30,
-                margin: EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage(images[index]), fit: BoxFit.cover),
+                      image: AssetImage(food!.image!), fit: BoxFit.cover),
                 ),
               ),
+            ),
+            SizedBox(
+              height: 5,
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// Title
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        namesfood[index],
-                        style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        food.title!,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
                       ),
-                      SizedBox(height: 4,),
+                      SizedBox(
+                        height: 4,
+                      ),
                       Text(
                         "\$\$\$",
                         style: TextStyle(color: Colors.grey),
                       )
                     ],
                   ),
+                  SizedBox(
+                    height: 4,
+                  ),
+
+                  ///Rating Bar
                   rating(),
-                  SizedBox(height: 4,),
-                  Text("${namesmeal[index]} • ${places[index]}"),
-                  SizedBox(height: 4,)
+                  Text("${food.name!} • ${food.location!}"),
+                  SizedBox(
+                    height: 4,
+                  )
                 ],
               ),
             )
@@ -207,7 +162,7 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
     );
   }
 
-  ///rating
+  /// Rating Bar
   Row rating() {
     return Row(
       children: [
@@ -224,14 +179,41 @@ class _FriendlyEatsAppState extends State<FriendlyEatsApp> {
           color: Colors.yellow,
         ),
         Icon(
-          Icons.star_half,
+          Icons.star_sharp,
           color: Colors.yellow,
         ),
         Icon(
-          Icons.star_border_sharp,
+          Icons.star_outline_outlined,
           color: Colors.yellow,
-        ),
+        )
       ],
+    );
+  }
+
+  /// Button Loader
+  Widget buttonLoadMore() {
+    return Container(
+      alignment: Alignment.center,
+      width: 150,
+      height: 30,
+      child: MaterialButton(
+        shape: const StadiumBorder(),
+        color: Colors.blue,
+        onPressed: () {
+          setState(() {
+            if ((present + perPage) > allFoods.length) {
+              foods.addAll(allFoods.getRange(present, allFoods.length));
+            } else {
+              foods.addAll(allFoods.getRange(present, present + perPage));
+            }
+            present = present + perPage;
+          });
+        },
+        child: const Text(
+          "Load More",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 }
